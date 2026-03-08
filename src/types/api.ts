@@ -105,3 +105,13 @@ export interface AIGenerationRequest {
   id_cliente: string;
   id_produto: string;
 }
+
+export interface ClienteCreateRequest {
+  nome_cliente: string;
+}
+
+export interface ProdutoCreateRequest {
+  nome: string;
+  descricao: string;
+  tipo: "servico" | "plataforma" | "consultoria";
+}

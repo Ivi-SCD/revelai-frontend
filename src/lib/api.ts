@@ -10,7 +10,9 @@ import {
   Jornada,
   ReuniaoInput,
   DocumentoInput,
-  AIGenerationRequest
+  AIGenerationRequest,
+  ClienteCreateRequest,
+  ProdutoCreateRequest
 } from '@/types/api';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -124,6 +126,26 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  // Criar Cliente e Produto
+  async criarCliente(data: ClienteCreateRequest): Promise<Cliente> {
+    return this.request<Cliente>('/clientes/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async criarProduto(data: ProdutoCreateRequest): Promise<Produto> {
+    return this.request<Produto>('/clientes/produtos', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Check tasks completion
+  async verificarTasksConcluidas(idCliente: string, idProduto: string): Promise<{ todas_concluidas: boolean }> {
+    return this.request<{ todas_concluidas: boolean }>(`/implementacao/tasks/concluidas/cliente/${idCliente}/produto/${idProduto}`);
   }
 }
 

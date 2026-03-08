@@ -69,7 +69,7 @@ export default function JourneyPage() {
   });
 
   // Fetch uso
-  const { data: uso, refetch: refetchUso } = useQuery({
+  const { data: uso, error: errorUso, refetch: refetchUso } = useQuery({
     queryKey: ['uso', idCliente, idProduto],
     queryFn: () => apiService.getUso(idCliente, idProduto),
     enabled: !!idCliente && !!idProduto && activePhase === 4,
@@ -77,10 +77,18 @@ export default function JourneyPage() {
   });
 
   // Fetch evolucao
-  const { data: evolucao, refetch: refetchEvolucao } = useQuery({
+  const { data: evolucao, error: errorEvolucao, refetch: refetchEvolucao } = useQuery({
     queryKey: ['evolucao', idCliente, idProduto],
     queryFn: () => apiService.getEvolucao(idCliente, idProduto),
     enabled: !!idCliente && !!idProduto && activePhase === 5,
+    retry: false,
+  });
+
+  // Check if tasks are completed (for uso/evolucao phases)
+  const { data: tasksCompletion } = useQuery({
+    queryKey: ['tasksCompletion', idCliente, idProduto],
+    queryFn: () => apiService.verificarTasksConcluidas(idCliente, idProduto),
+    enabled: !!idCliente && !!idProduto && (activePhase === 4 || activePhase === 5),
     retry: false,
   });
 
@@ -492,7 +500,33 @@ export default function JourneyPage() {
           {/* Phase 4: Uso */}
           {activePhase === 4 && (
             <div className="space-y-6">
-              {uso ? (
+              {tasksCompletion && !tasksCompletion.todas_concluidas ? (
+                <div className="text-center py-12">
+                  <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Implantação Incompleta</h3>
+                  <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                    Para acessar a fase de Uso, é necessário concluir todas as tarefas de implantação primeiro.
+                  </p>
+                  <button 
+                    onClick={() => setActivePhase(2)} 
+                    className="btn-primary"
+                  >
+                    Ir para Implantação
+                  </button>
+                </div>
+              ) : errorUso ? (
+                <div className="text-center py-12">
+                  <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Dados de Uso Não Encontrados</h3>
+                  <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                    Não foi possível carregar os dados de uso. Gere uma análise para começar.
+                  </p>
+                  <button onClick={handleGenerateAI} disabled={generating} className="btn-primary">
+                    {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    <span className="ml-2">Gerar Análise de Uso</span>
+                  </button>
+                </div>
+              ) : uso ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-gray-50 rounded-lg p-4">
@@ -546,7 +580,33 @@ export default function JourneyPage() {
           {/* Phase 5: Evolução */}
           {activePhase === 5 && (
             <div className="space-y-6">
-              {evolucao ? (
+              {tasksCompletion && !tasksCompletion.todas_concluidas ? (
+                <div className="text-center py-12">
+                  <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Implantação Incompleta</h3>
+                  <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                    Para acessar a fase de Evolução, é necessário concluir todas as tarefas de implantação primeiro.
+                  </p>
+                  <button 
+                    onClick={() => setActivePhase(2)} 
+                    className="btn-primary"
+                  >
+                    Ir para Implantação
+                  </button>
+                </div>
+              ) : errorEvolucao ? (
+                <div className="text-center py-12">
+                  <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Dados de Evolução Não Encontrados</h3>
+                  <p className="text-gray-500 mb-4 max-w-md mx-auto">
+                    Não foi possível carregar os dados de evolução. Gere uma análise para começar.
+                  </p>
+                  <button onClick={handleGenerateAI} disabled={generating} className="btn-primary">
+                    {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                    <span className="ml-2">Gerar Análise de Evolução</span>
+                  </button>
+                </div>
+              ) : evolucao ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gray-50 rounded-lg p-4">
