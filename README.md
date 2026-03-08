@@ -2,6 +2,8 @@
 
 # 🚀 RevelAI
 
+![Imagem Logo Revelia](/docs/images/revelai.png)
+
 ### Plataforma Inteligente de Customer Success
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
