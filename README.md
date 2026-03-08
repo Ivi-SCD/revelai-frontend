@@ -1,246 +1,196 @@
-# RevelAI - Frontend
+<div align="center">
 
-Uma plataforma moderna de Customer Success powered by AI construída com Next.js 14, TypeScript, Tailwind CSS e shadcn/ui.
+# 🚀 RevelAI
 
-## 🚀 Tecnologias Utilizadas
+### Plataforma Inteligente de Customer Success
 
-- **Next.js 14** com App Router
-- **TypeScript** para type safety
-- **Tailwind CSS** para estilização
-- **shadcn/ui** para componentes UI
-- **Framer Motion** para animações
-- **TanStack Query** para gerenciamento de dados
-- **Lucide React** para ícones
-- **Recharts** para gráficos
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+**Transforme dados em insights acionáveis com IA para maximizar o sucesso do cliente**
+
+[Demo](http://localhost:3000) · [Backend](../revelai-backend) · [Documentação](#-documentação)
+
+</div>
+
+---
+
+## 📋 Sobre o Projeto
+
+O **RevelAI** é uma plataforma completa de Customer Success que utiliza Inteligência Artificial para acompanhar toda a jornada do cliente, desde a contratação até a evolução contínua. A plataforma analisa sentimentos, gera insights automatizados e fornece recomendações personalizadas para cada fase do relacionamento.
+
+### ✨ Principais Diferenciais
+
+- 🤖 **IA Generativa** - Análises automáticas com LLMs (Groq/LLaMA)
+- 📊 **Jornada Completa** - 5 fases: Contratação → Implantação → Treinamento → Uso → Evolução
+- 🎯 **Insights Acionáveis** - Recomendações práticas baseadas em dados
+- ⚡ **Real-time** - Atualizações instantâneas com TanStack Query
+
+---
+
+## 🛠️ Tech Stack
+
+| Categoria | Tecnologia |
+|-----------|------------|
+| **Framework** | Next.js 15 (App Router) |
+| **Linguagem** | TypeScript |
+| **Estilização** | Tailwind CSS + shadcn/ui |
+| **Estado** | TanStack Query (React Query) |
+| **Ícones** | Lucide React |
+| **Backend** | FastAPI + MongoDB + LangChain |
+
+---
+
+## 🚀 Quick Start
+
+### Pré-requisitos
+
+- Node.js 18+
+- npm ou yarn
+- Backend rodando em `localhost:8000`
+
+### Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/relevai-frontend.git
+cd relevai-frontend
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
+```
+
+Acesse **http://localhost:3000** 🎉
+
+---
 
 ## 📁 Estrutura do Projeto
 
 ```
 src/
-├── app/                          # Páginas Next.js
-│   ├── globals.css              # Estilos globais
-│   ├── layout.tsx               # Layout principal
-│   ├── page.tsx                 # Dashboard
-│   ├── jornada/[id_cliente]/[id_produto]/  # Jornada do cliente
-│   ├── reunioes/                # Formulário de reuniões
-│   └── documentos/             # Formulário de documentos
+├── app/                    # Páginas (App Router)
+│   ├── page.tsx           # Dashboard principal
+│   ├── jornada/           # Jornada do cliente
+│   ├── reunioes/          # Input de reuniões
+│   └── documentos/        # Input de documentos
 ├── components/
-│   ├── layout/                  # Componentes de layout
-│   │   ├── Layout.tsx
-│   │   ├── Sidebar.tsx
-│   │   └── Header.tsx
-│   ├── dashboard/              # Componentes do dashboard
-│   │   ├── StatCard.tsx
-│   │   └── ClientTable.tsx
-│   ├── journey/                # Componentes da jornada
-│   │   ├── ClientProductHeader.tsx
-│   │   ├── JourneyTimeline.tsx
-│   │   └── phases/             # Fases da jornada
-│   ├── forms/                  # Formulários
-│   │   ├── ReuniaoForm.tsx
-│   │   └── DocumentoForm.tsx
-│   ├── ui/                     # Componentes UI reutilizáveis
-│   │   ├── animated-components.tsx
-│   │   └── ai-generation-modal.tsx
-│   └── Providers.tsx           # React Query provider
+│   ├── layout/            # Layout, Sidebar, Header
+│   ├── journey/           # Componentes da jornada
+│   └── ui/                # Componentes reutilizáveis
 ├── lib/
-│   ├── api.ts                  # Serviço de API
-│   └── utils.ts                # Utilitários
+│   └── api.ts             # Serviço de API
 └── types/
-    └── api.ts                  # Tipos TypeScript da API
+    └── api.ts             # Tipos TypeScript
 ```
+
+---
+
+## 🎯 Funcionalidades
+
+### 📊 Dashboard
+- Visão geral de clientes e produtos
+- Criação rápida de empresas para teste
+- Busca e filtros
+
+### 🛤️ Jornada do Cliente
+
+| Fase | Descrição |
+|------|-----------|
+| **1. Contratação** | Análise de sentimento, engagement score, plano recomendado |
+| **2. Implantação** | Kanban de tasks, progresso, treinamentos |
+| **3. Treinamento** | Trilhas de cursos com progresso |
+| **4. Uso** | Score de satisfação, métricas, timeline de sentimentos |
+| **5. Evolução** | Maturidade, marcos, oportunidades de expansão |
+
+### 🤖 Geração com IA
+- Clique em "Gerar com IA" em qualquer fase
+- Análises automáticas baseadas em dados do cliente
+- Recomendações personalizadas
+
+---
+
+## 🔌 API Endpoints
+
+```typescript
+// Clientes & Produtos
+GET  /api/v1/clientes/
+POST /api/v1/clientes/
+GET  /api/v1/clientes/produtos
+POST /api/v1/clientes/produtos
+
+// Jornada
+GET  /api/v1/jornada/cliente/{id}/produto/{id}
+
+// Geração IA
+POST /api/v1/analises/           # Contratação
+POST /api/v1/implementacao/gerar # Implantação
+POST /api/v1/uso/gerar           # Uso
+POST /api/v1/evolucao/gerar      # Evolução
+
+// Tasks
+PATCH /api/v1/implementacao/tasks/{id}
+GET   /api/v1/implementacao/tasks/progresso/cliente/{id}/produto/{id}
+```
+
+---
 
 ## 🎨 Design System
 
-- **Cores Primárias**: Gradiente Indigo/Violet (#6366f1 → #8b5cf6)
-- **Cores Secundárias**: Emerald (positivo), Rose (negativo), Amber (alerta)
-- **Background**: Slate-950 com grid pattern sutil
-- **Cards**: Glass-morphism effect com backdrop-blur
-- **Animações**: Framer Motion para transições suaves
-- **Tipografia**: Inter font com hierarquia clara
+- **Cor Primária**: `#25A3FE` (Azul)
+- **Sucesso**: Emerald
+- **Erro**: Rose
+- **Alerta**: Amber
+- **Cards**: Bordas suaves com sombras sutis
+- **Tipografia**: Sistema nativo com hierarquia clara
 
-## 🛠️ Funcionalidades Principais
+---
 
-### 1. Dashboard
-- **Hero Section**: Título animado com gradient text
-- **Stats Cards**: 4 cards com métricas principais e trends
-- **Client Table**: Lista de clientes com busca, sentimentos e scores
-- **Quick Actions**: Botões para nova análise e ver jornada
+## 📦 Scripts
 
-### 2. Jornada do Cliente (Página Hero)
-- **Client & Product Header**: Cards com informações do cliente e produto
-- **Journey Timeline**: Timeline horizontal com 5 fases clicáveis
-- **Phase 1 - Contratação**: Análise de sentimento, engagement score, planos
-- **Phase 2 - Implementação**: Kanban board de tasks, progresso, treinamentos
-- **Phase 3 - Treinamento**: Trilhas e cursos com progresso
-- **Phase 4 - Uso**: Satisfação, timeline de sentimentos, métricas
-- **Phase 5 - Evolução**: Maturidade, milestones, oportunidades
-
-### 3. Geração AI
-- **Loading Animations**: Ícones pulsantes e spinning
-- **Streaming Effects**: Animações de revelação de conteúdo
-- **Error Handling**: Estados de erro e retry
-
-### 4. Formulários de Input
-- **Reuniões**: Formulário rich text para notas de reunião
-- **Documentos**: Upload de arquivos e informações completas
-
-## 🔌 Integração com Backend
-
-O frontend se conecta a um backend FastAPI rodando em `http://localhost:8000`:
-
-```typescript
-// Exemplo de chamada API
-const { data: clientes } = useQuery({
-  queryKey: ['clientes'],
-  queryFn: () => apiService.getClientes(),
-});
-```
-
-### Endpoints Principais
-
-- `GET /api/v1/clientes/` - Lista todos os clientes
-- `GET /api/v1/clientes/produtos` - Lista produtos
-- `GET /api/v1/jornada/cliente/{id}/produto/{id}` - Jornada completa
-- `POST /api/v1/analises/` - Gerar análise de contratação
-- `POST /api/v1/implementacao/gerar` - Gerar implementação
-- `POST /api/v1/uso/gerar` - Gerar análise de uso
-- `POST /api/v1/evolucao/gerar` - Gerar análise de evolução
-
-## 🎯 Features de Hackathon
-
-### Real-time AI Generation
-- Loading states com brain/sparkle animations
-- Streaming effects para revelação de conteúdo
-- Progress indicators e toast notifications
-
-### Smooth Animations
-- Page transitions com Framer Motion
-- Card reveals e hover effects
-- Number counters animados de 0 ao valor
-- Sentiment faces que mudam expressão
-
-### Interactive Journey Timeline
-- Horizontal stepper com 5 fases
-- Glow effects na fase atual
-- Clickable cards com smooth transitions
-
-### Responsive Design
-- Funciona em large screen demos
-- Tablet-friendly layout
-- Mobile-responsive components
-
-### Empty States
-- Beautiful illustrations quando não há dados
-- Call-to-action para "Generate your first AI analysis!"
-
-### Gamification Elements
-- Confetti animation quando tasks são concluídas
-- Progress rings animados
-- Achievement badges
-
-## 🚀 Getting Started
-
-1. **Instale as dependências**:
-   ```bash
-   npm install
-   ```
-
-2. **Configure as variáveis de ambiente**:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-3. **Inicie o servidor de desenvolvimento**:
-   ```bash
-   npm run dev
-   ```
-
-4. **Acesse a aplicação**:
-   ```
-   http://localhost:3000
-   ```
-
-## 📊 Componentes Animados
-
-### AnimatedProgressRing
-```typescript
-<AnimatedProgressRing 
-  value={85} 
-  size={120}
-  color="emerald"
-  label="Score"
-/>
-```
-
-### AnimatedCounter
-```typescript
-<AnimatedCounter 
-  value={1234} 
-  duration={2}
-  suffix=" clientes"
-/>
-```
-
-### AnimatedTimeline
-```typescript
-<AnimatedTimeline 
-  items={timelineItems}
-/>
-```
-
-## 🎨 Customização
-
-### Cores
-Modifique as cores no `globals.css`:
-```css
-.gradient-text {
-  @apply bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent;
-}
-```
-
-### Animações
-Configure durações e easings nos componentes:
-```typescript
-transition={{ duration: 0.5, ease: "easeInOut" }}
-```
-
-## 📱 Performance
-
-- **Code Splitting**: Next.js automatic code splitting
-- **Lazy Loading**: Componentes carregados sob demanda
-- **Image Optimization**: Next.js Image component
-- **Caching**: TanStack Query com cache inteligente
-
-## 🔒 TypeScript
-
-O projeto é 100% tipado com interfaces para:
-- Respostas da API
-- Props dos componentes
-- Estados dos formulários
-- Tipos de eventos
-
-## 🚀 Deploy
-
-### Vercel (Recomendado)
 ```bash
-npm run build
-vercel --prod
+npm run dev      # Desenvolvimento
+npm run build    # Build de produção
+npm run start    # Iniciar produção
+npm run lint     # Verificar código
 ```
 
-### Docker
+---
+
+## 🐳 Docker
+
 ```bash
+# Build
 docker build -t relevai-frontend .
+
+# Run
 docker run -p 3000:3000 relevai-frontend
 ```
 
-## 🏆 Conclusão
+---
 
-Este frontend foi projetado para vencer hackathons com:
-- **UI/UX excepcional** com animações suaves
-- **Demonstração clara** do valor da IA
-- **Código limpo** e mantível
-- **Performance otimizada**
-- **Experiência completa** do usuário
+## 🤝 Contribuindo
 
-A jornada do cliente é a página principal que conta uma história completa, mostrando como a IA transforma dados em insights acionáveis para Customer Success.
+1. Fork o projeto
+2. Crie sua branch (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Add nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+<div align="center">
+
+**Feito com ❤️ para transformar Customer Success com IA**
+
+</div>
