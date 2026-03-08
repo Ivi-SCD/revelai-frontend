@@ -52,7 +52,7 @@ export default function JornadaPage() {
           ) : (
             <div className="space-y-3">
               {clientes.map((cliente) => {
-                const produto = produtos[0];
+                const produto = produtos.find(p => p.id_cliente === cliente.id_cliente);
                 return (
                   <div 
                     key={cliente.id_cliente}

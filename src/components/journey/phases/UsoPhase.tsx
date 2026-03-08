@@ -57,6 +57,41 @@ export default function UsoPhase({ data, onGenerateAI, isLoading }: UsoPhaseProp
     }
   };
 
+  const formatFieldName = (key: string): string => {
+    const fieldNames: Record<string, string> = {
+      'frequencia_uso': 'Frequência de Uso',
+      'funcionalidades_mais_usadas': 'Funcionalidades Mais Usadas',
+      'tempo_medio_sessao': 'Tempo Médio de Sessão',
+      'usuarios_ativos': 'Usuários Ativos',
+      'taxa_adocao': 'Taxa de Adoção',
+      'nivel_adocao': 'Nível de Adoção',
+      'logins_mensais': 'Logins Mensais',
+      'dashboards_criados': 'Dashboards Criados',
+      'relatorios_gerados': 'Relatórios Gerados',
+      'integracoes_ativas': 'Integrações Ativas',
+      'alertas_configurados': 'Alertas Configurados',
+      'usuarios_treinados': 'Usuários Treinados',
+      'tickets_suporte': 'Tickets de Suporte',
+      'nps': 'NPS',
+    };
+    return fieldNames[key] || key.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  };
+
+  const formatFieldValue = (value: unknown): string => {
+    if (typeof value === 'number') {
+      return value.toLocaleString('pt-BR');
+    }
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    if (typeof value === 'string') {
+      return value;
+    }
+    return String(value);
+  };
+
   if (!data) {
     return (
       <motion.div
@@ -179,24 +214,28 @@ export default function UsoPhase({ data, onGenerateAI, isLoading }: UsoPhaseProp
         <Card className="glass-card p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Métricas de Uso</h3>
           <div className="space-y-4">
-            {Object.entries(data.metricas_uso).map(([key, value]) => (
-              <div key={key} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400 capitalize">
-                    {key.replace('_', ' ')}
-                  </span>
-                  <span className="text-white font-bold">
-                    {typeof value === 'number' ? value.toLocaleString('pt-BR') : value}
-                  </span>
+            {Object.entries(data.metricas_uso).map(([key, value]) => {
+              const formattedName = formatFieldName(key);
+              const formattedValue = formatFieldValue(value);
+              return (
+                <div key={key} className="space-y-2">
+                  <div className="flex flex-row items-center justify-between gap-4">
+                    <span className="text-gray-400 flex-shrink-0">
+                      {formattedName}
+                    </span>
+                    <span className="text-white font-bold text-right">
+                      {formattedValue}
+                    </span>
+                  </div>
+                  {typeof value === 'number' && (
+                    <Progress 
+                      value={Math.min((value as number) * 10, 100)} 
+                      className="h-2" 
+                    />
+                  )}
                 </div>
-                {typeof value === 'number' && (
-                  <Progress 
-                    value={Math.min((value as number) * 10, 100)} 
-                    className="h-2" 
-                  />
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
       </div>
