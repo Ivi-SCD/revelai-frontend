@@ -11,6 +11,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "RevelAI - Customer Success AI Platform",
   description: "Acompanhe a jornada do seu cliente com IA",
+  icons: {
+    icon: "/revelia-icon-blue.svg",
+    apple: "/revelia-icon-blue.svg",
+  },
 };
 
 export default function RootLayout({

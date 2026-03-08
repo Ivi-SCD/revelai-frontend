@@ -70,6 +70,7 @@ export interface Cliente {
 
 export interface Produto {
   id_produto: string;
+  id_cliente?: string;
   nome: string;
   descricao: string;
   tipo: string;
@@ -111,7 +112,17 @@ export interface ClienteCreateRequest {
 }
 
 export interface ProdutoCreateRequest {
+  id_cliente: string;
   nome: string;
   descricao: string;
   tipo: "servico" | "plataforma" | "consultoria";
+}
+
+export interface HistoricoItem {
+  tipo: 'reuniao' | 'documento';
+  id: string;
+  id_produto: string;
+  data: string;
+  conteudo: string;
+  created_at: string;
 }

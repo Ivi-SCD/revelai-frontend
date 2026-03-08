@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { Loader2, Sparkles, Handshake, Settings, GraduationCap, Play, TrendingUp, AlertCircle, CheckCircle, Clock, Star } from 'lucide-react';
+import { Loader2, Sparkles, Handshake, Settings, GraduationCap, Play, TrendingUp, AlertCircle, CheckCircle, Clock, Star, FileText, Calendar, ChevronDown, ChevronUp } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { apiService } from '@/lib/api';
 
@@ -91,6 +91,16 @@ export default function JourneyPage() {
     enabled: !!idCliente && !!idProduto && (activePhase === 4 || activePhase === 5),
     retry: false,
   });
+
+  // Fetch unified history (reuniões + documentos)
+  const { data: historicoData } = useQuery({
+    queryKey: ['historico', idCliente, idProduto],
+    queryFn: () => apiService.getHistoricoUnificadoProduto(idCliente, idProduto),
+    enabled: !!idCliente && !!idProduto,
+    retry: false,
+  });
+
+  const [showHistorico, setShowHistorico] = useState(false);
 
   const handleGenerateAI = async () => {
     setGenerating(true);
@@ -220,6 +230,82 @@ export default function JourneyPage() {
               {jornada?.produto?.fase_atual && <span className="badge-neutral">{jornada.produto.fase_atual}</span>}
             </div>
           </div>
+        </div>
+
+        {/* Unified History Section */}
+        <div className="card p-4">
+          <button
+            onClick={() => setShowHistorico(!showHistorico)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-violet-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium text-gray-900">Histórico Unificado</h3>
+                <p className="text-sm text-gray-500">
+                  {historicoData?.total || 0} registros (reuniões e documentos)
+                </p>
+              </div>
+            </div>
+            {showHistorico ? (
+              <ChevronUp className="w-5 h-5 text-gray-400" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-gray-400" />
+            )}
+          </button>
+          
+          {showHistorico && historicoData?.historico && (
+            <div className="mt-4 space-y-3 max-h-96 overflow-y-auto">
+              {historicoData.historico.length === 0 ? (
+                <p className="text-gray-500 text-center py-4">
+                  Nenhum registro encontrado. Adicione reuniões ou documentos.
+                </p>
+              ) : (
+                historicoData.historico.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`p-3 rounded-lg border ${
+                      item.tipo === 'reuniao' 
+                        ? 'bg-blue-50 border-blue-200' 
+                        : 'bg-amber-50 border-amber-200'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        item.tipo === 'reuniao' ? 'bg-blue-100' : 'bg-amber-100'
+                      }`}>
+                        {item.tipo === 'reuniao' ? (
+                          <Calendar className="w-4 h-4 text-blue-600" />
+                        ) : (
+                          <FileText className="w-4 h-4 text-amber-600" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded ${
+                            item.tipo === 'reuniao' 
+                              ? 'bg-blue-100 text-blue-700' 
+                              : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {item.tipo === 'reuniao' ? 'Reunião' : 'Documento'}
+                          </span>
+                          {item.data && (
+                            <span className="text-xs text-gray-500">{item.data}</span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-700 line-clamp-3">
+                          {item.conteudo?.substring(0, 200)}
+                          {item.conteudo && item.conteudo.length > 200 ? '...' : ''}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {/* Phase Timeline */}

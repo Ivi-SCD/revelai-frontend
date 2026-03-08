@@ -12,7 +12,8 @@ import {
   DocumentoInput,
   AIGenerationRequest,
   ClienteCreateRequest,
-  ProdutoCreateRequest
+  ProdutoCreateRequest,
+  HistoricoItem
 } from '@/types/api';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -146,6 +147,14 @@ class ApiService {
   // Check tasks completion
   async verificarTasksConcluidas(idCliente: string, idProduto: string): Promise<{ todas_concluidas: boolean }> {
     return this.request<{ todas_concluidas: boolean }>(`/implementacao/tasks/concluidas/cliente/${idCliente}/produto/${idProduto}`);
+  }
+
+  async getHistoricoUnificado(idCliente: string): Promise<{ historico: HistoricoItem[]; total: number }> {
+    return this.request<{ historico: HistoricoItem[]; total: number }>(`/dados/historico/cliente/${idCliente}`);
+  }
+
+  async getHistoricoUnificadoProduto(idCliente: string, idProduto: string): Promise<{ historico: HistoricoItem[]; total: number }> {
+    return this.request<{ historico: HistoricoItem[]; total: number }>(`/dados/historico/cliente/${idCliente}/produto/${idProduto}`);
   }
 }
 
