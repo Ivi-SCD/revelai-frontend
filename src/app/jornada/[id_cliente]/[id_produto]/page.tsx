@@ -113,8 +113,8 @@ export default function JourneyPage() {
   const handleTaskUpdate = async (taskId: string, status: 'pendente' | 'em_andamento' | 'concluido') => {
     try {
       await apiService.updateTaskStatus(taskId, status);
-      await refetchTasks();
-      await refetchProgresso();
+      await queryClient.invalidateQueries({ queryKey: ['tasks', idCliente, idProduto] });
+      await queryClient.invalidateQueries({ queryKey: ['progresso', idCliente, idProduto] });
     } catch (error) {
       console.error('Error updating task:', error);
     }
