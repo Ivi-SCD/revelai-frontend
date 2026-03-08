@@ -14,7 +14,7 @@ export default function Dashboard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createStep, setCreateStep] = useState<'cliente' | 'produto'>('cliente');
   const [clienteForm, setClienteForm] = useState({ nome_cliente: '' });
-  const [produtoForm, setProdutoForm] = useState({ nome: '', descricao: '', tipo: 'plataforma' as const });
+  const [produtoForm, setProdutoForm] = useState<{ nome: string; descricao: string; tipo: 'servico' | 'plataforma' | 'consultoria' }>({ nome: '', descricao: '', tipo: 'plataforma' });
   const [createdCliente, setCreatedCliente] = useState<{ id_cliente: string; nome_cliente: string } | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
 
