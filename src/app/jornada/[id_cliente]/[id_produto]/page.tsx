@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { Loader2, Sparkles, Handshake, Settings, GraduationCap, Play, TrendingUp, AlertCircle, CheckCircle, Clock, Star } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
@@ -22,6 +22,7 @@ export default function JourneyPage() {
   const idProduto = params.id_produto as string;
   const [activePhase, setActivePhase] = useState(1);
   const [generating, setGenerating] = useState(false);
+  const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
   // Fetch journey data
   const { data: jornada, isLoading: loadingJornada, error: errorJornada, refetch: refetchJornada } = useQuery({
@@ -42,7 +43,11 @@ export default function JourneyPage() {
   // Fetch tasks
   const { data: tasks = [], refetch: refetchTasks } = useQuery({
     queryKey: ['tasks', idCliente, idProduto],
-    queryFn: () => apiService.getTasks(idCliente, idProduto),
+    queryFn: async () => {
+      const result = await apiService.getTasks(idCliente, idProduto);
+      console.log('Tasks from API:', result);
+      return result;
+    },
     enabled: !!idCliente && !!idProduto && activePhase === 2,
     retry: false,
   });
@@ -110,14 +115,26 @@ export default function JourneyPage() {
     }
   };
 
-  const handleTaskUpdate = async (taskId: string, status: 'pendente' | 'em_andamento' | 'concluido') => {
-    try {
-      await apiService.updateTaskStatus(taskId, status);
-      await queryClient.invalidateQueries({ queryKey: ['tasks', idCliente, idProduto] });
-      await queryClient.invalidateQueries({ queryKey: ['progresso', idCliente, idProduto] });
-    } catch (error) {
+  const taskMutation = useMutation({
+    mutationFn: ({ taskId, status }: { taskId: string; status: 'pendente' | 'em_andamento' | 'concluido' }) =>
+      apiService.updateTaskStatus(taskId, status),
+    onMutate: ({ taskId }) => {
+      setUpdatingTaskId(taskId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', idCliente, idProduto] });
+      queryClient.invalidateQueries({ queryKey: ['progresso', idCliente, idProduto] });
+    },
+    onError: (error) => {
       console.error('Error updating task:', error);
-    }
+    },
+    onSettled: () => {
+      setUpdatingTaskId(null);
+    },
+  });
+
+  const handleTaskUpdate = (taskId: string, status: 'pendente' | 'em_andamento' | 'concluido') => {
+    taskMutation.mutate({ taskId, status });
   };
 
   const getSentimentEmoji = (sentiment: string) => {
@@ -370,39 +387,48 @@ export default function JourneyPage() {
 
                   {/* Tasks Kanban */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {['pendente', 'em_andamento', 'concluido'].map((status) => (
-                      <div key={status} className="space-y-3">
+                    {(['pendente', 'em_andamento', 'concluido'] as const).map((columnStatus) => (
+                      <div key={columnStatus} className="space-y-3">
                         <h3 className={`text-sm font-medium px-2 ${
-                          status === 'pendente' ? 'text-amber-600' :
-                          status === 'em_andamento' ? 'text-[#25A3FE]' : 'text-emerald-600'
+                          columnStatus === 'pendente' ? 'text-amber-600' :
+                          columnStatus === 'em_andamento' ? 'text-[#25A3FE]' : 'text-emerald-600'
                         }`}>
-                          {status === 'pendente' ? 'Pendente' :
-                           status === 'em_andamento' ? 'Em Andamento' : 'Concluído'}
+                          {columnStatus === 'pendente' ? 'Pendente' :
+                           columnStatus === 'em_andamento' ? 'Em Andamento' : 'Concluído'}
                         </h3>
                         <div className="space-y-2">
-                          {tasks.filter(t => t.status === status).map((task) => (
-                            <div 
-                              key={task.id_task}
-                              className="bg-gray-50 border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-gray-300 transition-colors"
-                              onClick={() => {
-                                const nextStatus = status === 'pendente' ? 'em_andamento' : 
-                                                   status === 'em_andamento' ? 'concluido' : 'concluido';
-                                if (status !== 'concluido') handleTaskUpdate(task.id_task, nextStatus);
-                              }}
-                            >
-                              <p className="text-gray-900 text-sm">{task.descricao}</p>
-                              <div className="flex items-center justify-between mt-2">
-                                <div className="flex items-center gap-0.5">
-                                  {Array.from({ length: 5 }).map((_, i) => (
-                                    <Star key={i} className={`w-3 h-3 ${
-                                      i < task.complexidade ? 'text-amber-500 fill-current' : 'text-gray-300'
-                                    }`} />
-                                  ))}
+                          {tasks.filter(t => (t.status || 'pendente') === columnStatus).map((task) => {
+                            const isUpdating = updatingTaskId === task.id_task;
+                            return (
+                              <div 
+                                key={task.id_task}
+                                className={`bg-gray-50 border border-gray-200 rounded-lg p-3 transition-colors ${
+                                  columnStatus !== 'concluido' && !isUpdating ? 'cursor-pointer hover:border-gray-300' : ''
+                                } ${isUpdating ? 'opacity-50' : ''}`}
+                                onClick={() => {
+                                  if (isUpdating) return;
+                                  const nextStatus = columnStatus === 'pendente' ? 'em_andamento' : 
+                                                     columnStatus === 'em_andamento' ? 'concluido' : 'concluido';
+                                  if (columnStatus !== 'concluido') handleTaskUpdate(task.id_task, nextStatus);
+                                }}
+                              >
+                                <div className="flex items-center gap-2">
+                                  {isUpdating && <Loader2 className="w-4 h-4 animate-spin text-[#25A3FE]" />}
+                                  <p className="text-gray-900 text-sm">{task.descricao}</p>
                                 </div>
-                                <span className="text-gray-600 text-xs">{task.tempo_desenvolvimento}</span>
+                                <div className="flex items-center justify-between mt-2">
+                                  <div className="flex items-center gap-0.5">
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <Star key={i} className={`w-3 h-3 ${
+                                        i < task.complexidade ? 'text-amber-500 fill-current' : 'text-gray-300'
+                                      }`} />
+                                    ))}
+                                  </div>
+                                  <span className="text-gray-600 text-xs">{task.tempo_desenvolvimento}</span>
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
